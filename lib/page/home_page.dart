@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   String user = FirebaseAuth.instance.currentUser!.uid;
   late CollectionReference ref;
   late Stream<QuerySnapshot> todoStream;
+  DateTime backPressed = DateTime.now();
   @override
   void initState(){
     ref = FirebaseFirestore.instance.collection('todo').doc(user).collection('my_todo');
@@ -29,155 +31,170 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(  
-      appBar: AppBar(
-        leading: Container(),
-        title: Text(
-          'TO DO',
-          style: TextStyle(
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-        actions: [
-          Container(
-            margin: EdgeInsets.symmetric(
-              horizontal: SizeConfig.sizeHorizontal(2),
+    return WillPopScope(
+      onWillPop: ()async{
+         final timeGap = DateTime.now().difference(backPressed);
+        final cantExit = timeGap >= const Duration(seconds: 2);
+        backPressed = DateTime.now();
+        if(cantExit){
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Press once again to exit')),
+          );
+          return false;
+        }else {
+          exit(0);
+        }
+      },
+      child: Scaffold(  
+        appBar: AppBar(
+          leading: Container(),
+          title: Text(
+            'TO DO',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
             ),
-            child: IconButton(
-              icon: FaIcon(
-                FontAwesomeIcons.rightFromBracket,
-                color: Theme.of(context).primaryColor,
+          ),
+          actions: [
+            Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: SizeConfig.sizeHorizontal(2),
               ),
-              onPressed: (){
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    title: const Center(
-                      child: FaIcon(
-                        FontAwesomeIcons.solidCircleQuestion,
-                        color: Color(0xffEBCB8B),
-                        size: 80,
-                      ),
-                    ),
-                    content: const Text(
-                      'Are you sure want to sign out ?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Color(0xffdee5ee)),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () async{
-                          FirebaseAuth.instance.signOut();
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
-                        },
-                        child: Text(
-                          'Yes',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('No'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-      body: StreamBuilder(
-        stream: ref.orderBy('created_at', descending: false).snapshots(),
-        // stream: ref.snapshots(),
-        builder: ((context, snapshot){
-          print('snapshot =${snapshot.connectionState}');
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return loadingWidget(context);
-          } else{
-            if(snapshot.hasError){
-              return Center(
-                child: Text('some error \n ${snapshot.error}'),
-              );
-            } else if(snapshot.hasData){
-              if(snapshot.data!.size == 0){
-                return const Center(
-                  child: Text('No Todo'),
-                );
-              } else{
-                return ListView(
-                  children: snapshot.data!.docs.map((DocumentSnapshot document){
-                    Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                    return Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: SizeConfig.sizeVertical(1),
-                        horizontal: SizeConfig.sizeHorizontal(1),
-                      ),
-                      decoration: BoxDecoration(
+              child: IconButton(
+                icon: FaIcon(
+                  FontAwesomeIcons.rightFromBracket,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onPressed: (){
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).appBarTheme.backgroundColor
                       ),
-                      child: ListTile(
-                        leading: InkWell(
-                          onTap: (){
-                            // print('document id = ${document.id}');
-                            todoFinish(document.id, data['finish']);
+                      title: const Center(
+                        child: FaIcon(
+                          FontAwesomeIcons.solidCircleQuestion,
+                          color: Color(0xffEBCB8B),
+                          size: 80,
+                        ),
+                      ),
+                      content: const Text(
+                        'Are you sure want to sign out ?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Color(0xffdee5ee)),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () async{
+                            FirebaseAuth.instance.signOut();
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                           },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: SizeConfig.sizeVertical(4),
-                            width: SizeConfig.sizeVertical(4),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: (data['finish'])
-                                  ? Theme.of(context).primaryColor
-                                  : const Color(0xff4C566A),
+                          child: Text(
+                            'Yes',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('No'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        body: StreamBuilder(
+          stream: ref.orderBy('created_at', descending: false).snapshots(),
+          // stream: ref.snapshots(),
+          builder: ((context, snapshot){
+            print('snapshot =${snapshot.connectionState}');
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return loadingWidget(context);
+            } else{
+              if(snapshot.hasError){
+                return Center(
+                  child: Text('some error \n ${snapshot.error}'),
+                );
+              } else if(snapshot.hasData){
+                if(snapshot.data!.size == 0){
+                  return const Center(
+                    child: Text('No Todo'),
+                  );
+                } else{
+                  return ListView(
+                    children: snapshot.data!.docs.map((DocumentSnapshot document){
+                      Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                      return Container(
+                        margin: EdgeInsets.symmetric(
+                          vertical: SizeConfig.sizeVertical(1),
+                          horizontal: SizeConfig.sizeHorizontal(1),
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Theme.of(context).appBarTheme.backgroundColor
+                        ),
+                        child: ListTile(
+                          leading: InkWell(
+                            onTap: (){
+                              // print('document id = ${document.id}');
+                              todoFinish(document.id, data['finish']);
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: SizeConfig.sizeVertical(4),
+                              width: SizeConfig.sizeVertical(4),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: (data['finish'])
+                                    ? Theme.of(context).primaryColor
+                                    : const Color(0xff4C566A),
+                                ),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              borderRadius: BorderRadius.circular(10),
+                              child: FaIcon(
+                                FontAwesomeIcons.check,
+                                color: (data['finish'])
+                                ? Theme.of(context).primaryColor
+                                : const Color(0xff4C566A),
+                              ),
                             ),
-                            child: FaIcon(
-                              FontAwesomeIcons.check,
-                              color: (data['finish'])
-                              ? Theme.of(context).primaryColor
-                              : const Color(0xff4C566A),
+                          ),
+                          title: Text("${data['todo']}"),
+                          trailing: IconButton(
+                            onPressed: () => deleteTodo(document.id),
+                            icon: const FaIcon(
+                              FontAwesomeIcons.trash,
+                              color: Color(0xffBF616A),
                             ),
                           ),
                         ),
-                        title: Text("${data['todo']}"),
-                        trailing: IconButton(
-                          onPressed: () => deleteTodo(document.id),
-                          icon: const FaIcon(
-                            FontAwesomeIcons.trash,
-                            color: Color(0xffBF616A),
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                      );
+                    }).toList(),
+                  );
+                }
+              }else{
+                return Center(
+                  child: Text('snapsot = $snapshot'),
                 );
               }
-            }else{
-              return Center(
-                child: Text('snapsot = $snapshot'),
-              );
             }
-          }
-        }),
-      ),
-      floatingActionButton: FloatingActionButton(
-        elevation:1,
-        onPressed: () => addTodo(),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        child: Center(
-          child: FaIcon(
-            FontAwesomeIcons.plus,
-            color: Theme.of(context).primaryColor,
+          }),
+        ),
+        floatingActionButton: FloatingActionButton(
+          elevation:1,
+          onPressed: () => addTodo(),
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          child: Center(
+            child: FaIcon(
+              FontAwesomeIcons.plus,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
         ),
       ),
