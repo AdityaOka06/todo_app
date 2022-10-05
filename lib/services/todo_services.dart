@@ -11,16 +11,16 @@ class TodoService{
     return FirebaseFirestore.instance.collection('todo').doc(user!.uid).collection('my_todo');
   }
 
-  Future<Stream<QuerySnapshot>> streamTodo() async{
+  Future<Query<Object?>> streamTodo() async{
     try{
       CollectionReference ref = await getCollection();
-      return ref.orderBy('created_at', descending: false).snapshots();
+      return ref.orderBy('created_at', descending: false);
     }catch(e){
       throw Exception('error = $e');
     }
   }
 
-  Future<void> finishTodo(String id, bool value) async{
+  Future<void> changeStatusTodo(String id, bool value) async{
     CollectionReference ref = await getCollection();
     await ref.doc(id).update({'finish' : !value,})
       .then((value) => print('done'))
@@ -38,6 +38,6 @@ class TodoService{
       'todo' : todo,
       'finish' : false,
       'created_at' : date,
-    }).then((value) => print('donse')).onError((error, stackTrace) => throw Exception('error $error'));
+    }).then((value) => print('done')).onError((error, stackTrace) => throw Exception('error $error'));
   }
 }

@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:todo_app/widget/loading_widget.dart';
 
 import 'login_cubit.dart';
-import '../../util/size_config.dart';
 import '../home_page/home_page.dart';
+import '../../util/size_config.dart';
 import '../../widget/error_alert.dart';
 import '../register_page/register_page.dart';
 
