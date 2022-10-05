@@ -4,11 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
-import 'login_page.dart';
-import '../util/size_config.dart';
-import '../widget/error_alert.dart';
-import '../widget/loading_widget.dart';
+import '../../util/size_config.dart';
+import '../login_page/login_page.dart';
+import '../../widget/error_alert.dart';
+import '../../widget/loading_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,7 +24,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState(){
     ref = FirebaseFirestore.instance.collection('todo').doc(user).collection('my_todo');
-    todoStream = ref.orderBy('created_at', descending: false).get().asStream();
     super.initState();
   }
 

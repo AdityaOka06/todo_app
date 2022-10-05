@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'util/theme.dart';
 import 'firebase_options.dart';
-import 'page/splash_page.dart';
+import 'page/splash_page/splash_page.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
