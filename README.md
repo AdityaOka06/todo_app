@@ -1,16 +1,13 @@
-# todo_app
+# TODO APP
+[![Awesome Flutter](https://img.shields.io/badge/Awesome-Flutter-blue.svg)](https://github.com/Solido/awesome-flutter)
 
-A new Flutter project.
+A simple todo application using Flutter.
+I'm using Firebase for authentication and Cloud Firestore for storing data
 
-## Getting Started
+## APP Preview
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Login](screen_shoot/ss_login.png "Login")
+![Register](screen_shoot/ss_register.png "Register")
+![Home](screen_shoot/ss_home.png "Home")
+![TODO](screen_shoot/ss_add_todo.png "TODO")
+![Log Out](screen_shoot/ss_logout.png "Log Out")

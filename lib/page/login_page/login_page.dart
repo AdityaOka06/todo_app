@@ -118,18 +118,21 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.sizeHorizontal(3),
-                    ),
-                    alignment: Alignment.bottomRight,
-                    child: TextButton(
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterPage())),
-                      child: const Text(
-                        'Register',
-                        style: TextStyle(color: Color(0xffb7bbc3)),
-                      ),
-                    ),
+                  // Container(
+                  //   margin: EdgeInsets.symmetric(
+                  //     horizontal: SizeConfig.sizeHorizontal(3),
+                  //   ),
+                  //   alignment: Alignment.bottomRight,
+                  //   child: TextButton(
+                  //     onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterPage())),
+                  //     child: const Text(
+                  //       'Register',
+                  //       style: TextStyle(color: Color(0xffb7bbc3)),
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(
+                    height: SizeConfig.sizeVertical(2),
                   ),
                   SizedBox(
                     width: SizeConfig.sizeHorizontal(95),
@@ -144,6 +147,22 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       },
                       child: const Text('Login'),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.sizeHorizontal(3),
+                    ),
+                    child: TextButton(
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterPage())),
+                      child: Text(
+                        "DON'T HAVE AN ACCOUNT ?",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14
+                        ),
+                      ),
                     ),
                   ),
                 ],
